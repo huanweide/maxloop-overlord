@@ -3,7 +3,7 @@
 本技能要求双文档留痕：**改动记录** + **会议记录**。在系统判定「项目已无问题」之前持续维护，不得省略。
 
 ## 一、改动记录（自身所有改动）
-- 形式：项目原生变更日志。novel-forge 用双 changelog（根 `CHANGELOG.md` + `src/lib/changelog-data.ts`，见适配层）。
+- 形式：项目原生变更日志。示例项目用双 changelog（根 `CHANGELOG.md` + `src/lib/changelog-data.ts`，见适配层）。
 - 每次升版须含：版本号、日期、4 条摘要、具体改动列表（对齐 IMP 编号）。
 - 每次 commit 须将变更日志与代码同提交；推送后回写项目记忆（`.workbuddy/memory/`）。
 

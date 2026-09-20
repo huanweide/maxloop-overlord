@@ -104,7 +104,7 @@ Baseline（旧代码）：
 
 Candidate（新代码）：
   $ git stash pop && node test/run.js
-  → PASS: 通过 421 / 失败 0                   ← 贴真实输出
+  → PASS: 通过 421 / 失败 0（示意数字）                   ← 贴真实输出
 
 翻转确认：baseline FAIL ✔ / candidate PASS ✔（两条都要有）
 ```
