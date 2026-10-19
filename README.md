@@ -1,6 +1,10 @@
 # MaxLoop 魔王系统
 
+![license](https://img.shields.io/badge/license-MIT-blue) ![version](https://img.shields.io/badge/version-v3.2-green) ![stars](https://img.shields.io/github/stars/huanweide/maxloop-overlord?style=social) ![type](https://img.shields.io/badge/type-multi--agent-red)
+
 > **一句话**：自带刹车的多智能体迭代引擎——让 AI 自我迭代在「有限轮数」里真正收敛，而不是一轮接一轮假绿空转。**任何 agent 都能直接加载使用，不绑定任何项目、语言或框架。**
+>
+> 它也是 [GitHub 作品集优化器](https://github.com/huanweide/gh-project-optimizer) 的内核：同一套「外部判据」刹车，既能把代码改到问题归零，也能把你的整个 GitHub 作品集改到「更值得 star」——描述、标签、README 数据化、可复用项目一键 skills 化。
 
 ---
 
@@ -185,6 +189,19 @@ flowchart TD
 | v3.0 | 引入四件套刹车（Oracle Gate / 判别测试 / Patch-Depth / Repeat-Failure）+ 证据制评审 |
 | v3.1 | 宗旨显性化 + 主循环状态机图 + Chair 执行清单 + 公开发布到 GitHub |
 | v3.2 | 通用化（任何 agent 可用 / 不绑技术栈）+ 效率指数可视化（产出级别/时间/效率指数 + dashboard.html） |
+
+---
+
+## 配套：GitHub 作品集优化器
+
+魔王系统不只修代码——它的同款「外部判据」刹车被抽成了 [gh-project-optimizer](https://github.com/huanweide/gh-project-optimizer)，专门做**作品集 star 性升级**：
+
+- **描述 / 标签优化**：每个仓库补满可检索的 topic、把空泛描述改写成「价值 + 能力 + 形态」一句话。
+- **README 数据化**：用「人人懂的指数」（覆盖维度、零依赖、CI 门禁、实测对比）替代空话。
+- **skills 化**：把可复用工具 / Prompt 工作流一键包成 WorkBuddy skill，跨项目立即调用。
+- **精选化**：不删仓、不私藏，用聚合仓做枢纽把同族散仓导流成一张网。
+
+任何 GitHub 用户都能用，不绑 huanweide。
 
 ---
 
