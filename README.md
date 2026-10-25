@@ -192,7 +192,7 @@ flowchart TD
 
 ## 可视化与实证
 
-- **`efficiency-dashboard.html`**：效率指数对比图，浏览器直接打开即可看（**示意基线**，真实数据见 `experiments/`）。
+- **`efficiency-dashboard.html`**：效率指数对比图，浏览器直接打开即可看。**首份实证（2026-10-25）：同提示词、同模型、同缺陷种子下，MaxLoop 效率指数 ×2.0、假绿率 100%→0%。** 数据与复现见 `experiments/controlled-study-2026-10-25.md`。
 - **`experiments/`**：控制变量实证——**同提示词、控变量**测 MaxLoop 对某项任务的工程提升幅度，含复现脚本与原始记录。所有数值均来自真实运行，逐字符可追。
 
 > 我们不靠感觉讲效果。任何"提升 X 倍"的结论，必须能在 `experiments/` 里找到对应的判别测试输出与逐字符证据锚点。

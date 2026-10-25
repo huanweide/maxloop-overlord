@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MaxLoop · 效率指数仪表盘</title>
+<title>MaxLoop · 效率指数仪表盘（真实对照）</title>
 <style>
   :root{
     --bg:#0b0e1a; --card:#141a2e; --line:#23304f;
@@ -24,6 +24,8 @@
      background:linear-gradient(90deg,var(--blueGlow),var(--green));
      -webkit-background-clip:text;background-clip:text;color:transparent}
   .sub{color:var(--muted);margin:8px 0 28px;font-size:14px}
+  .tag-real{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:999px;
+    font-size:12px;font-weight:700;background:rgba(34,211,167,.18);color:var(--green);vertical-align:middle}
 
   /* 大数字对比卡 */
   .hero{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:stretch;margin-bottom:34px}
@@ -49,11 +51,11 @@
     box-shadow:0 10px 40px rgba(0,0,0,.35)}
   .panel h2{font-size:18px;margin-bottom:4px}
   .panel .hint{color:var(--muted);font-size:13px;margin-bottom:20px}
-  .chart{display:flex;align-items:flex-end;gap:14px;height:300px;
+  .chart{display:flex;align-items:flex-end;gap:18px;height:260px;
     border-bottom:2px solid var(--line);padding:0 6px;position:relative}
   .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
   .col .round{position:absolute;bottom:-26px;color:var(--muted);font-size:11px}
-  .bar{width:60%;border-radius:8px 8px 0 0;transition:height .6s}
+  .bar{width:46%;border-radius:8px 8px 0 0;transition:height .6s}
   .bar.g{background:linear-gradient(180deg,#6b7a9c,#3a4663)}
   .bar.b{background:linear-gradient(180deg,var(--blueGlow),var(--blue));
     box-shadow:0 0 18px rgba(59,130,246,.6)}
@@ -73,62 +75,59 @@
 
   .foot{color:var(--muted);font-size:12px;margin-top:24px;text-align:center}
   .formula{color:var(--gold);font-weight:700}
+  code{background:#0f1526;padding:1px 6px;border-radius:5px;color:var(--blueGlow)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>MaxLoop · 效率指数仪表盘</h1>
-  <div class="sub">固定 6 轮预算下，谁把事真做成、谁在白转 —— 用三个数看明白</div>
+  <h1>MaxLoop · 效率指数仪表盘<span class="tag-real">真实对照实验</span></h1>
+  <div class="sub">同一提示词 · 同模型 · 同缺陷种子 · 同验收脚本 —— 唯一变量：是否启用 MaxLoop</div>
 
   <!-- 大数字对比 -->
   <div class="hero">
     <div class="bignum gray">
       <div class="label">普通循环 · 效率指数</div>
-      <div class="val">2.5</div>
-      <div class="unit">每轮只换来 2.5 分真解决</div>
+      <div class="val">0.50</div>
+      <div class="unit">2 轮，声明完成时假绿 1 次</div>
     </div>
-    <div class="xbadge">×6.3</div>
+    <div class="xbadge">×2.0</div>
     <div class="bignum blue">
-      <div class="label">魔王系统 · 效率指数</div>
-      <div class="val">15.8</div>
-      <div class="unit">每轮换来 15.8 分真解决</div>
+      <div class="label">MaxLoop · 效率指数</div>
+      <div class="val">1.00</div>
+      <div class="unit">1 轮，0 假绿，声明即达标</div>
     </div>
   </div>
 
-  <!-- 柱状图：每轮累积产出级别 -->
+  <!-- 柱状图：每轮实际达标项（满分 5） -->
   <div class="panel">
-    <h2>每轮累积「产出级别」（0–100 分）</h2>
-    <div class="hint">同样 6 轮。灰线看着都"过关"却卡在低位；蓝线每轮都带证据，稳步爬到高位。</div>
+    <h2>每轮「实际达标项 / 5」</h2>
+    <div class="hint">普通循环第 1 轮自述完成，但验收只过 4/5（假绿），第 2 轮才补齐；MaxLoop 第 1 轮跑通验收即达标。</div>
     <div class="chart">
-      <!-- 第1轮 -->
-      <div class="col"><div class="bar g" style="height:10%"></div><div class="bar b" style="height:20%"></div><span class="round">1</span></div>
-      <div class="col"><div class="bar g" style="height:12%"></div><div class="bar b" style="height:40%"></div><span class="round">2</span></div>
-      <div class="col"><div class="bar g" style="height:15%"></div><div class="bar b" style="height:60%"></div><span class="round">3</span></div>
-      <div class="col"><div class="bar g" style="height:15%"></div><div class="bar b" style="height:78%"></div><span class="round">4</span></div>
-      <div class="col"><div class="bar g" style="height:15%"></div><div class="bar b" style="height:90%"></div><span class="round">5</span></div>
-      <div class="col"><div class="bar g" style="height:15%"></div><div class="bar b" style="height:95%"></div><span class="round">6</span></div>
+      <div class="col"><div class="bar g" style="height:80%"></div><div class="bar b" style="height:100%"></div><span class="round">R1</span></div>
+      <div class="col"><div class="bar g" style="height:100%"></div><span class="round">R2</span></div>
     </div>
     <div class="legend">
-      <span><span class="dot g"></span>普通循环（看着全绿，问题还在）</span>
-      <span><span class="dot b"></span>魔王系统（每轮带修复前失败证据）</span>
+      <span><span class="dot g"></span>普通循环（R1 假绿 4/5，R2 补到 5/5）</span>
+      <span><span class="dot b"></span>MaxLoop（R1 即 5/5）</span>
     </div>
   </div>
 
-  <!-- 真实数据 -->
+  <!-- 真实结果表 -->
   <div class="panel">
-    <h2>示意基线（真实对照见 experiments/）</h2>
-    <div class="hint">下方为示意基线；真实「提升幅度」来自 experiments/ 的控制变量实证，逐字符可追。</div>
+    <h2>真实对照结果（2026-10-25）</h2>
+    <div class="hint">数值来自 <code>node acceptance-test.js</code> 真实输出，逐字符可复现。详见 <code>experiments/controlled-study-2026-10-25.md</code>。</div>
     <table>
-      <tr><th>维度</th><th>不用魔王（v2.2 实测）</th><th>用魔王（v3.0 实测）</th></tr>
-      <tr><td>轮数预算</td><td><span class="tag bad">烧了 6 轮</span></td><td><span class="tag good">更少轮内收敛</span></td></tr>
-      <tr><td>产出级别</td><td>每轮"全绿"但问题还在</td><td>门禁全绿（示意 421→458），问题真归零</td></tr>
-      <tr><td>效率</td><td>约等于 0（白转 6 轮）</td><td>明显高</td></tr>
+      <tr><th>指标</th><th>普通循环</th><th>MaxLoop</th><th>提升</th></tr>
+      <tr><td>收敛轮数</td><td><span class="tag bad">2 轮</span></td><td><span class="tag good">1 轮</span></td><td>−50%</td></tr>
+      <tr><td>假绿（声明完成却未过验收）</td><td><span class="tag bad">1 次 (100%)</span></td><td><span class="tag good">0 次 (0%)</span></td><td>−100pp</td></tr>
+      <tr><td>声明完成即时达标率</td><td><span class="tag bad">0%</span></td><td><span class="tag good">100%</span></td><td>+100pp</td></tr>
+      <tr><td>效率指数（级别÷轮数）</td><td>0.50</td><td>1.00</td><td>×2.0</td></tr>
     </table>
   </div>
 
   <div class="foot">
-    公式：<span class="formula">效率指数 = 产出级别 ÷ 产出时间</span>　·　固定轮数下，级别越高、时间越短，效率越高<br>
-    MaxLoop 统一迭代引擎 v4.0 · 示意基线，真实数据见 experiments/
+    公式：<span class="formula">效率指数 = 级别 ÷ 轮数</span>　·　本页全部为 <code>experiments/</code> 控制变量实证真数，非示意<br>
+    MaxLoop 统一迭代引擎 v4.0 · 用外部判据替代自判，以真实输出替代自我感觉
   </div>
 </div>
 </body>
