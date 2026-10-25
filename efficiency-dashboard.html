@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>魔王系统 · 效率指数仪表盘</title>
+<title>MaxLoop · 效率指数仪表盘</title>
 <style>
   :root{
     --bg:#0b0e1a; --card:#141a2e; --line:#23304f;
@@ -77,7 +77,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>魔王系统 · 效率指数仪表盘</h1>
+  <h1>MaxLoop · 效率指数仪表盘</h1>
   <div class="sub">固定 6 轮预算下，谁把事真做成、谁在白转 —— 用三个数看明白</div>
 
   <!-- 大数字对比 -->
@@ -116,8 +116,8 @@
 
   <!-- 真实数据 -->
   <div class="panel">
-    <h2>示意数据（来自某真实项目，非编造）</h2>
-    <div class="hint">不靠感觉，靠同一项目上的实测对比。</div>
+    <h2>示意基线（真实对照见 experiments/）</h2>
+    <div class="hint">下方为示意基线；真实「提升幅度」来自 experiments/ 的控制变量实证，逐字符可追。</div>
     <table>
       <tr><th>维度</th><th>不用魔王（v2.2 实测）</th><th>用魔王（v3.0 实测）</th></tr>
       <tr><td>轮数预算</td><td><span class="tag bad">烧了 6 轮</span></td><td><span class="tag good">更少轮内收敛</span></td></tr>
@@ -128,7 +128,7 @@
 
   <div class="foot">
     公式：<span class="formula">效率指数 = 产出级别 ÷ 产出时间</span>　·　固定轮数下，级别越高、时间越短，效率越高<br>
-    MaxLoop 魔王系统 v3.2 · 面向所有人的通用 skill
+    MaxLoop 统一迭代引擎 v4.0 · 示意基线，真实数据见 experiments/
   </div>
 </div>
 </body>
