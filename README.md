@@ -204,6 +204,7 @@ flowchart TD
 - `promotion/show-hn.md` — Show HN 英文草稿，一键贴 Hacker News
 - `promotion/juejin-article.md` — 掘金中文长文草稿，讲透"假绿"与四道刹车
 - `promotion/demo-script.md` — 30–60 秒演示录屏脚本（终端 + 验收脚本，开箱即录）
+- `SKILL.en.md` — 英文完整方法论文档（英文读者 / 海外 agent 直接读懂，与 `SKILL.md` v4.2 逐条对应）
 
 转载、二创随意，注明出处即可。
 
@@ -228,7 +229,7 @@ flowchart TD
 
 - [ ] 更多 agent 适配示例（Claude Code / Cursor 实战记录）
 - [ ] `experiments/` 持续累积跨任务、跨模型的对照数据
-- [ ] 英文版完整 SKILL 文档
+- [x] 英文版完整 SKILL 文档（`SKILL.en.md`）
 - [ ] 贡献指南（欢迎提交你的实证结果）
 
 欢迎 **Star** 追踪进展，也欢迎在 `experiments/` 提交你的对照实验。
