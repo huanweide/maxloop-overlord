@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>区域销售仪表盘（普通轮询 R1）</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px; }
+  .card { max-width: 720px; margin: 0 auto; background: #1e293b; border-radius: 12px; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #94a3b8; font-size: 13px; margin-bottom: 16px; }
+  .kpi { font-size: 14px; margin-bottom: 16px; }
+  .kpi b { color: #38bdf8; font-size: 22px; }
+  .chart { display: flex; align-items: flex-end; gap: 18px; height: 250px; padding: 12px 0; border-bottom: 1px solid #334155; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; height: 100%; }
+  .bar { width: 48px; background: linear-gradient(180deg, #38bdf8, #0ea5e9); border-radius: 6px 6px 0 0; }
+  .bar-label { margin-top: 8px; font-size: 12px; color: #cbd5e1; }
+  .note { margin-top: 14px; font-size: 12px; color: #64748b; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>区域销售仪表盘</h1>
+    <div class="sub">2026 财年 · 单位：万元</div>
+    <div class="kpi">峰值地区销售额：<b id="max-val">150</b></div>
+    <div class="chart" role="img" aria-label="区域销售柱状图，共 4 个地区">
+      <div class="bar-wrap">
+        <div class="bar" data-label="North" data-value="120" style="height:180px" role="img" aria-label="North: 120"></div>
+        <div class="bar-label">North</div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar" data-label="South" data-value="90" style="height:135px" role="img" aria-label="South: 90"></div>
+        <div class="bar-label">South</div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar" data-label="East" data-value="150" style="height:225px" role="img" aria-label="East: 120"></div>
+        <div class="bar-label">East</div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar" data-label="West" data-value="60" style="height:90px" role="img" aria-label="West: 60"></div>
+        <div class="bar-label">West</div>
+      </div>
+    </div>
+    <div class="note">数据源：硬编码快照。比例系数 1.5px / 万元。</div>
+  </div>
+</body>
+</html>
