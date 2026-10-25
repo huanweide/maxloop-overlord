@@ -1,6 +1,6 @@
 # MaxLoop · 带刹车的 AI 自我迭代引擎
 
-![Version](https://img.shields.io/badge/version-4.0-blue)
+![Version](https://img.shields.io/badge/version-4.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/huanweide/maxloop-overlord?style=social)
 ![Last Commit](https://img.shields.io/github/last-commit/huanweide/maxloop-overlord)
@@ -199,6 +199,16 @@ flowchart TD
 
 ---
 
+## 推广物料（想帮我们涨 star？直接用）
+
+- `promotion/show-hn.md` — Show HN 英文草稿，一键贴 Hacker News
+- `promotion/juejin-article.md` — 掘金中文长文草稿，讲透"假绿"与四道刹车
+- `promotion/demo-script.md` — 30–60 秒演示录屏脚本（终端 + 验收脚本，开箱即录）
+
+转载、二创随意，注明出处即可。
+
+---
+
 ## 版本
 
 | 版本 | 要点 |
@@ -209,6 +219,8 @@ flowchart TD
 | v3.2 | 通用化 + 效率指数可视化 |
 | v3.3 | VulnClaw 四设计内化（证据锚点 / 证据仓 / stall guard / 差分探测） |
 | **v4.0** | **融合 maxloop-overlord + maxloop-upgrade 为一套思维双模式；互相补短升级有效性与效果；移除独立 upgrade skill；新增实证目录 `experiments/`** |
+| v4.1 | 用户导向校准：焊入「发现真问题 → 轮次修复 → 测试 → 交付真结果」统一脊柱；阶段一强化"发现真问题"、阶段七加"交付小结"、3.5 交付纪律 + Chair#9 专治"倒一大堆"；同轮数实证（MaxLoop 第1轮即真绿，普通轮询第1轮假绿第2轮补对） |
+| **v4.2** | **用 MaxLoop 思想净化 MaxLoop 自身（第一性原理逐步行净化，核心四件套不变）；SKILL 瘦身外置版本摘要至 CHANGELOG，七阶段挂脊柱标签①②③④** |
 
 ---
 
