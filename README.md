@@ -1,23 +1,36 @@
-# MaxLoop · 带刹车的 AI 自我迭代引擎
+<p align="center">
+  <img src="assets/banner.svg" alt="MaxLoop · 带刹车的 AI 自我迭代引擎" width="1280">
+</p>
+
+# 🔁 MaxLoop · 带刹车的 AI 自我迭代引擎
 
 ![Version](https://img.shields.io/badge/version-4.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/huanweide/maxloop-overlord?style=social)
 ![Last Commit](https://img.shields.io/github/last-commit/huanweide/maxloop-overlord)
+![CI](https://github.com/huanweide/maxloop-overlord/actions/workflows/ci.yml/badge.svg)
 
 > **English TL;DR** — MaxLoop is a drop-in skill that makes *any* AI agent's self-iteration actually converge, using **external-verification brakes** (Oracle Gate + discriminating tests + evidence anchors) instead of "the model says it's done". Two modes: **product deep-iteration** and **plan-upgrade**. Works with WorkBuddy / Claude Code / Cursor / Codex / OpenCode. MIT.
 
-> **一句话**：一套「带刹车的迭代收敛」通用引擎——让 AI 自我迭代在**有限轮数**里真正收敛，而不是一轮接一轮假绿空转。任何 agent 都能直接加载，不绑定项目、语言或框架。
+> **一句话**：一套「带刹车的迭代收敛」通用引擎——让 AI 自我迭代在**有限轮数**里真正收敛，而不是一轮接一轮**假绿空转**。任何 agent 都能直接加载，不绑定项目、语言或框架。
 
 > v4.0 起，原 `maxloop-overlord`（魔王系统）与 `maxloop-upgrade`（方案升级循环）已**融合为一套思维、两个模式**，本仓库同版本升级。
 
+**自然语言 / AI 迭代 → 自动完成「发现真问题 → 轮次修复 → 外部判据复检 → 真达标才交付」**
+
+[30 秒看懂](#-30-秒看懂) · [它能做什么](#-它能做什么) · [特性](#-特性) · [快速开始](#-快速开始) · [触发词速查](#-触发词速查) · [架构](#-架构) · [相关项目](#-相关项目) · [贡献](#-贡献)
+
 ---
 
-## 30 秒看懂（demo）
+## 🔁 30 秒看懂
 
 ```
 用户：把登录接口修一下，别再报 SQL 注入
+
 普通循环：✅ 已修复（改用参数化查询）          ← 模型自己说"修好了"
+         第 2 轮：✅ 已修复                    ← 还是自己说的
+         第 3 轮：✅ 已修复                    ← 轮数烧光，问题还在
+
 MaxLoop ：Oracle Gate 复检 → 实跑 PoC → 发现 username 字段仍可注入
          判别测试：baseline 旧版必红 + candidate 必绿 → 旧"修复"未过门禁
          → 不出"已修复"结论，继续修到真过测试才放行
@@ -27,83 +40,51 @@ MaxLoop ：Oracle Gate 复检 → 实跑 PoC → 发现 username 字段仍可注
 
 ---
 
-## 这套 skill 解决什么
+## 🔁 它能做什么
 
-- **假绿空转**：传统 AI 自我迭代常「每轮测试都过，问题却还在」，靠模型自己说"修好了"做判据。
-- **换马甲返工**：同一缺陷被换层、换说法来回修，烧光轮数预算却没真解决。
-- **无证据带偏**：审查/升级结论凭感觉，没有证据的结论把方向带歪。
-- **乱加功能 / 主观自辩**：迭代时过度堆功能，或升级校验靠"我觉得对"走过场。
+两种触发，同一套引擎：
 
-MaxLoop 的全部设计只围绕两句话：**① 放行判据必须来自模型之外；② 只做合理且必要的改动。**
+**模式 A · 产品深度迭代（原魔王系统）**
 
----
+```
+User: 对这个仪表盘 HTML 做深度评审迭代，直到通过 acceptance-test.js
 
-## 双模式（同一引擎，适配器不同）
+Round 1: 深度体验   → 发现 #max-val 写死 120，数据集真实最大 150
+Round 1: 根因 R/C/N → R（非改不可）：数值来自硬编码，不是从数据集算出来的
+Round 2: 代码执行   → 改为从 dataset 实算最大值；同步修 aria-label
+Round 2: Oracle Gate→ 实跑 node acceptance-test.js dashboard-maxloop.html
+         → baseline(seed) 必红 / candidate 必绿 → 判别测试通过 → 放行
+Round 2: 交付       → 双文档 + 台账 + 证据锚点
+```
 
-| 维度 | 模式A · 产品深度迭代（原魔王系统） | 模式B · 方案升级循环（原升级循环） |
-|---|---|---|
-| 对象 | 已到「正式版」的产品 / 代码库 | 模板原档（PPT / 中期汇报 / 需求文档） |
-| 目标 | 深度体验 → 评审 → 修复直到问题归零 | 在原档上只合理化升级，不强行加 |
-| 触发词 | "深度评审迭代" / "魔王系统收敛" | "maxloop升级方案" / "三轮校验" / "监督agent模拟我" |
-| 产出 | 双文档 + 判别测试 + 放弃报告 | 升级方案文档 + 三轮校验台账 |
+**模式 B · 方案升级循环（原升级循环）**
 
-不是两个 skill，是一套思维两个入口。
+```
+User: maxloop 升级这份中期汇报 PPT
 
----
-
-## 为什么用 MaxLoop（核心价值）
-
-高效提升模型性能只是价值之一，更核心的是下面三项——且都能用**人人懂的指数**衡量：
-
-| 价值 | 一句话 | 人人懂的指数 |
-|---|---|---|
-| 产出级别更高 | 修一轮是真解决，不是"看着过关" | 产出级别（0–100 分） |
-| 产出时间更短 | 同一问题不反复返工，提前收敛 | 产出时间（轮数） |
-| 效率明显 | 有限轮数里每轮换来更多真解决 | 效率指数 = 级别 ÷ 轮数 |
-
-### 融合后的净升级（v4.0）
-
-- **overlord 学会"别乱加"**：任何改动先过必要性关（非改不可吗），抑制过度堆功能。
-- **upgrade 学会"拿证据说话"**：R/C/N 的正确性必须有真实来源锚点，不再主观自辩；方案升级也有轮数预算与收敛判据。
-- 二者都更可信、更省 token、结论更可复核。
+Round 1: 监督质询   → 模拟用户逐页挑刺，形成候选升级项
+Round 2: R/C/N 台账 → 每项判定"必须升级 / 可选项 / 不该加"，抑制乱加功能
+Round 3: 三轮校验   → 每条升级结论必须有真实来源锚点，禁止主观自辩
+Round 3: 交付       → 升级方案文档 + 校验台账 + 放弃报告
+```
 
 ---
 
-## MaxLoop vs 普通循环 vs 人工
+## 🔁 特性
 
-| 维度 | 普通循环 | 人工评审 | MaxLoop |
-|---|---|---|---|
-| 放行判据 | 模型自述 | 人主观 | 外部实证 + 逐字符证据锚点 |
-| 假绿风险 | 高 | 中 | 低（四件套刹车） |
-| 轮数效率 | 低（反复返工） | 慢 | 高（效率指数可量化） |
-| 可复核 | 否 | 部分 | 是（双文档 + 台账 + 证据） |
-| 适用 | 小修 | 关键发布 | 正式版迭代 / 方案升级 |
-
----
-
-## 典型请求（怎么触发）
-
-- 模式A："对 XX 做一轮深度评审并迭代修复" / "用魔王系统把这个问题收敛掉" / "有限轮数内把这个模块做扎实"
-- 模式B："maxloop 升级方案" / "在 PPT 基础上优化" / "监督 agent 模拟我反复挑刺" / "三轮校验"
-
-## 你需要提供
-
-| 模式A | 模式B |
-|---|---|
-| 构建/类型检查命令、测试命令、版本发布方式、推送部署命令 | 模板原档（PPT/中期汇报/需求文档）+ 现有研究结论 |
-
-## 产出（每轮交付）
-
-- 双文档留痕 + 台账；每个修复/升级附「修复前失败证据 + 判别测试」；每轮末填**效率指数报告**。
-
-## 边界（不适用）
-
-- 单次小修、纯问答、无明确产物的概念讨论，不需要开 MaxLoop。
-- 它管"迭代是否真收敛"，不替你写业务需求。
+- **Oracle Gate 外部判据闸门（最高铁律）** —— 声明"已修复"前必须给出五类真实判据：真跑输出 / lint / 入口可达 / 修复前失败证据 / 逐字符证据锚点；缺任一行直接打回。见 `references/oracle-gate.md`。
+- **判别测试 Discriminating Test（旧红新绿）** —— 同一个问题必须同时存在「改动前必红」与「改动后必绿」两份输出；只有绿没有红，等于没证明。见 `references/discriminating-test.md`。
+- **R/C/N + 5 Whys 根因闸门** —— 每个改动先过必要性关：R 非改不可 / C 可选项 / N 不该加；根因必须落到 `file:line`，辅以占位符替换测试证伪"改到位了没"。见 `references/root-cause-protocol.md`。
+- **逃逸阶梯 + stall guard（防空转）** —— 同一项卡住时 R2 换人、R3 换问题、R4 认输并出结构化放弃报告；连续 2 轮全体红点=0 立即停，不空派。见 `references/repeat-failure-breaker.md`。
+- **证据制评审 + 符号核销** —— 任何评审/升级结论必须挂真实来源锚点，无证据不收；结论漂移由符号核销防线拦截。见 `references/review-protocol.md`。
+- **效率指数（可量化，不靠感觉）** —— 产出级别 ÷ 轮数。首份对照实证（2026-10-25，同提示词/同模型/同缺陷种子）：**效率指数 ×2.0、假绿率 100%→0%**，数据与复现见 `experiments/controlled-study-2026-10-25.md`。
+- **零依赖、纯方法论** —— 整个 skill 就是 Markdown + 两个可视化 HTML；不装包、不联网、不绑定模型，任何能读 skill 的 agent 都能用。
 
 ---
 
-## 安装（你的 agent 都能用）
+## 🔁 快速开始
+
+### 安装（把 skill 放进你的 agent 的 skills 目录即生效）
 
 ```bash
 # WorkBuddy
@@ -119,132 +100,174 @@ git clone https://github.com/huanweide/maxloop-overlord.git ~/.cursor/skills/max
 git clone https://github.com/huanweide/maxloop-overlord.git ~/.codex/skills/maxloop-overlord
 ```
 
-放入对应 `skills` 路径即生效，无需额外配置。任何加载该 skill 的 agent 都可直接调用。
+放入对应 `skills` 路径即生效，无需额外配置。
+
+### 触发一句话
+
+```text
+模式A：对 XX 做一轮深度评审并迭代修复 / 用魔王系统把这个问题收敛掉
+模式B：maxloop 升级方案 / 在 PPT 基础上优化 / 三轮校验
+```
+
+### 自检（证明这套方法论真的跑过）
+
+```bash
+cd experiments
+node acceptance-test.js seed-dashboard.html      # 基准：必须红（3/5）
+node acceptance-test.js dashboard-maxloop.html   # 产物：必须绿（5/5）
+```
+
+真实输出：
+
+```
+=========================================
+验收对象: dashboard-maxloop.html
+数据集真实最大值(trueMax) = 150
+-----------------------------------------
+  [PASS] C1  柱子数=4, 唯一label数=4, labels=[North, South, East, West]
+  [PASS] C2  #max-val="150" 期望="150"
+  [PASS] C3  全部柱 aria-label 数值正确
+  [PASS] C4  比值=[1.500, 1.500, 1.500, 1.500] 最大偏离=0.00%
+  [PASS] C5  无 ERROR
+-----------------------------------------
+汇总: 5/5 项通过 -> PASS
+=========================================
+```
+
+> ⚠️ `seed-dashboard.html` 故意保留缺陷，它是**判别测试的 baseline（必须红）**。
+> CI 同时断言「seed 必红 + 四个产物必绿」——只绿不红不算证明。
 
 ---
 
-## 核心机制（四件套铁链，双模式共用）
+## 🔁 触发词速查
 
-```
-根因/必要性(R/C/N+A/B) → 确定改什么、改到根上没
-判别测试 / 差分探测    → 证明改了有效（改动前必红 / 改动后必绿）
-Oracle Gate + 证据锚点  → 禁止自己说改好了（真跑 / lint / 入口可达 / 修复前失败 / 逐字符锚点）
-逃逸阶梯 + stall guard  → 卡住时强制换打法（R2 换人 / R3 换问题 / R4 认输）
-```
-
-## 主循环状态机
-
-```mermaid
-flowchart TD
-    S0[阶段零 外部学习·载模板/搜资料] --> MODE{选模式}
-    MODE -- 产品 --> S1A[一 深度体验·开会子Agent]
-    MODE -- 方案 --> S1B[一 监督质询·模拟用户]
-    S1A --> S2[二 评审/候选·证据制]
-    S1B --> S2
-    S2 --> S3[三 根因+方案 R-C-N 门禁]
-    S3 --> S4[四 代码执行/落盘·范围收敛]
-    S4 --> S5[五 Oracle 复检 四行判据+判别测试+证据锚点]
-    S5 --> C{全部归零?}
-    C -- 否 --> S1A & S1B
-    C -- 是 --> S7[七 记录·双文档+台账+放弃报告]
-    S5 -. 同一项卡住 .-> R[Repeat-Failure 2-3-4]
-    R -- R2 换人 --> S3
-    R -- R3 换问题 --> S3
-    R -- R4 认输移出 --> S7
-    S2 -. 无证据不收 .-> P[结论漂移防线·符号核销]
-    S1A -. 通道故障 .-> D[通道降级·Chair 亲验]
-```
-
-## Chair 每轮执行清单（落地必勾）
-
-任何一项无法勾选 → 不许宣布「项目已无问题」。
-
-| # | 必做项 | 验收证据 |
+| 你说的话 | 模式 | 引擎做什么 |
 |---|---|---|
-| 0 | 阶段零外部学习已落盘（含「未找到」清单）；模式B 已载模板原档 | `best-practices.md` / 原档已载入 |
-| 1 | 每条评审/候选完成核销或 R/C/N 判定，0 命中即废弃 | 核销表或台账 |
-| 2 | 每个改动过 R/C/N + 根因段 B | 台账/根因落盘 |
-| 3 | 每条修复/升级配判别测试：baseline 旧版必红 + candidate 必绿 | 两份输出都在 |
-| 4 | Oracle Gate 全填（a 真跑 / b lint / c 入口可达 / d 修复前失败 / e 证据锚点） | 缺任一行打回 |
-| 5 | 同一项累计失败计数，R2/R3/R4 到点强制换打法 | stuck 计数在 |
-| 6 | 双文档 + 台账；R4 出结构化放弃报告 | 文件落盘 |
-| 7 | 反空转：连续 2 轮全体红点=0 即停 | 不空派 |
-| 8 | 效率指数已填 | 指数在记录 |
-
-## 🧰 同一作者的其他工具
-
-> 作者在做一系列开源效率工具，欢迎顺手点 Star 支持：
-
-- 📚 长篇创作 — AI 小说工坊，本地规则引擎零依赖：[点此访问](https://github.com/huanweide/novel-smith)
-- 🎓 网课助手 — 智慧树自动播放/续播/AI 答题：[点此访问](https://github.com/huanweide/zhihuishu-helper)
-- 🎬 字幕/视频 — B站字幕一键提取（零 Key 取官方字幕）：[点此访问](https://github.com/huanweide/bili-subtitle-universal)
-- 📺 实时字幕 — 直播/会议实时字幕：[点此访问](https://github.com/huanweide/live-subtitle)
-- ✂️ 视频摘要 — 长视频一键总结：[点此访问](https://github.com/huanweide/video-brief)
-- 🖥️ 总览 — 作者全部开源项目集散：[点此访问](https://github.com/huanweide/family-showcase)
-- 🩺 代码健康 — 零依赖多轴静态体检：[点此访问](https://github.com/huanweide/doctors)
-## 协议清单
-
-**核心四件套**
-- `oracle-gate.md` — 外部判据先决（最高铁律）
-- `root-cause-protocol.md` — 5 Whys 根因 + 占位符替换测试
-- `repeat-failure-breaker.md` — 2-3-4 逃逸阶梯
-- `discriminating-test.md` — 判别测试（baseline-fails / candidate-passes）
-
-**模式B 细则**
-- `upgrade-mode.md` — 方案升级循环完整细则（模板基准 / 监督 Agent / R/C/N 台账 / 美化用词纪律）
-
-**效果度量**
-- `effectiveness-metrics.md` — 效率指数 + 填写模板
-
-**评审与执行**
-- `review-protocol.md` · `solution-protocol.md` · `code-exec-protocol.md` · `loop-driver.md` · `degrade-protocol.md` · `record-keeping.md` · `experience-report-template.md` · `novel-forge-adapter.md`
+| "对 XX 做深度评审并迭代修复" | A | 七阶段闭环：体验 → 评审 → 根因 → 执行 → Oracle 复检 → 记录 |
+| "用魔王系统把这个收敛掉" | A | 同上，显式指定 maxloop 收敛纪律 |
+| "有限轮数内把这个模块做扎实" | A | 带轮数预算 + 效率指数报告 |
+| "maxloop 升级方案" | B | 模板基准 → 监督质询 → R/C/N 台账 → 三轮校验 |
+| "在 PPT 基础上优化" | B | 只合理化升级，不强行加内容 |
+| "监督 agent 模拟我反复挑刺" | B | 启用监督 Agent 对抗质询 |
 
 ---
 
-## 可视化与实证
+## 🔁 架构
 
-- **`efficiency-dashboard.html`**：效率指数对比图，浏览器直接打开即可看。**首份实证（2026-10-25）：同提示词、同模型、同缺陷种子下，MaxLoop 效率指数 ×2.0、假绿率 100%→0%。** 数据与复现见 `experiments/controlled-study-2026-10-25.md`。
-- **`experiments/`**：控制变量实证——**同提示词、控变量**测 MaxLoop 对某项任务的工程提升幅度，含复现脚本与原始记录。所有数值均来自真实运行，逐字符可追。
+七阶段主循环由**四道刹车**串成一条铁链；判据永远来自模型之外，收敛标准是"外部判据全绿"，不是"模型说好了"。
 
-> 我们不靠感觉讲效果。任何"提升 X 倍"的结论，必须能在 `experiments/` 里找到对应的判别测试输出与逐字符证据锚点。
-
----
-
-## 推广物料（想帮我们涨 star？直接用）
-
-- `promotion/show-hn.md` — Show HN 英文草稿，一键贴 Hacker News
-- `promotion/juejin-article.md` — 掘金中文长文草稿，讲透"假绿"与四道刹车
-- `promotion/demo-script.md` — 30–60 秒演示录屏脚本（终端 + 验收脚本，开箱即录）
-- `SKILL.en.md` — 英文完整方法论文档（英文读者 / 海外 agent 直接读懂，与 `SKILL.md` v4.2 逐条对应）
-
-转载、二创随意，注明出处即可。
-
----
-
-## 版本
-
-| 版本 | 要点 |
+| 原语 Primitive | 含义 |
 |---|---|
-| v2.2 | 初版多智能体迭代，留下「假收敛」教训 |
-| v3.0 | 引入四件套刹车（Oracle Gate / 判别测试 / Patch-Depth / Repeat-Failure）+ 证据制评审 |
-| v3.1 | 宗旨显性化 + 主循环状态机图 + Chair 执行清单 + 公开发布到 GitHub |
-| v3.2 | 通用化 + 效率指数可视化 |
-| v3.3 | VulnClaw 四设计内化（证据锚点 / 证据仓 / stall guard / 差分探测） |
-| **v4.0** | **融合 maxloop-overlord + maxloop-upgrade 为一套思维双模式；互相补短升级有效性与效果；移除独立 upgrade skill；新增实证目录 `experiments/`** |
-| v4.1 | 用户导向校准：焊入「发现真问题 → 轮次修复 → 测试 → 交付真结果」统一脊柱；阶段一强化"发现真问题"、阶段七加"交付小结"、3.5 交付纪律 + Chair#9 专治"倒一大堆"；同轮数实证（MaxLoop 第1轮即真绿，普通轮询第1轮假绿第2轮补对） |
-| **v4.2** | **用 MaxLoop 思想净化 MaxLoop 自身（第一性原理逐步行净化，核心四件套不变）；SKILL 瘦身外置版本摘要至 CHANGELOG，七阶段挂脊柱标签①②③④** |
+| **红点 finding** | 带 `file:line` 证据的具体问题，不是"感觉不好" |
+| **R/C/N 判定** | R 非改不可 / C 可选项 / N 不该加 —— 必要性与根因闸门 |
+| **判别测试** | baseline 必红 + candidate 必绿，证明"确实是这个改动起的效" |
+| **Oracle Gate** | 五类外部判据齐全才允许声称通过 |
+| **证据锚点** | 结论必须能在真实输出里逐字符对上 |
+| **逃逸阶梯** | R2 换人 / R3 换问题 / R4 认输，卡住就强制换打法 |
+| **stall guard** | 连续 N 轮无改善立即刹车交给人，杜绝空转 |
+
+```
+        ┌──────────── 阶段零 · 外部学习（载模板 / 搜资料）────────────┐
+        ↓
+  ① 发现真问题 ──→ ② 轮次修复 ──→ ③ 外部判据复检 ──→ ④ 交付真结果
+        ↑                                  │
+        │        未过 Oracle Gate           │
+        └──────────────────────────────────┘
+                     ↓ 同一项卡住
+            逃逸阶梯 R2 换人 / R3 换问题 / R4 认输
+                     ↓ 连续 N 轮零改善
+                stall guard 刹车 → 交给人
+```
+
+| 模块 Module | 文件 | 说明 |
+|---|---|---|
+| 主循环状态机 | `SKILL.md` | 七阶段 + 脊柱标签 ①②③④，英文版见 `SKILL.en.md` |
+| Oracle Gate | `references/oracle-gate.md` | 外部判据先决（最高铁律） |
+| 判别测试 | `references/discriminating-test.md` | baseline-fails / candidate-passes |
+| 根因协议 | `references/root-cause-protocol.md` | 5 Whys + 占位符替换测试 |
+| 逃逸阶梯 | `references/repeat-failure-breaker.md` | 2-3-4 换打法，防换马甲返工 |
+| 方案升级细则 | `references/upgrade-mode.md` | 模式 B 的模板基准 / R/C/N 台账 / 用词纪律 |
+| 执行与降级 | `references/code-exec-protocol.md` · `degrade-protocol.md` | 落盘纪律 / 通道故障降级到 Chair 亲验 |
+| 记录与度量 | `references/record-keeping.md` · `effectiveness-metrics.md` | 双文档 + 台账 + 效率指数 |
+| 场景适配器 | `references/novel-forge-adapter.md` | 把引擎接到具体业务的范例 |
+| 验收脚本 | `experiments/acceptance-test.js` | 无浏览器、纯 node 解析的客观验收器 |
 
 ---
 
-## Roadmap
+## 🔁 加一个你自己的适配器
 
-- [ ] 更多 agent 适配示例（Claude Code / Cursor 实战记录）
+MaxLoop 不绑定任务类型。把"外部判据"换成你 domain 的客观验收脚本，就能直接复用整套刹车：
+
+```js
+// my-acceptance.js —— 你的 Oracle（退出码 0=PASS，1=FAIL）
+const out = runMyThing('build/out.bin');
+if (out.latencyMs > 200) { console.error('FAIL: latency'); process.exit(1); }
+if (!out.hasChecksum)    { console.error('FAIL: checksum'); process.exit(1); }
+console.log('PASS');
+```
+
+然后把它当成 `Oracle Gate` 的第 (a) 条判据（真跑）：
+
+| Oracle Gate 五条 | 你的场景怎么填 |
+|---|---|
+| a 真跑 | `node my-acceptance.js` 输出 PASS |
+| b lint | 你的 linter / 类型检查命令 |
+| c 入口可达 | 产物能被真实入口加载 |
+| d 修复前失败 | 旧的 baseline 输出（必须 FAIL） |
+| e 证据锚点 | 失败行 / 指标值，能逐字符对上 |
+
+改完照抄 `references/novel-forge-adapter.md` 的结构落一个 adapter 文档即可。
+
+---
+
+## 🔁 路线图
+
+- [x] 四道刹车（Oracle Gate / 判别测试 / 根因闸门 / 逃逸阶梯）
+- [x] 效率指数 + 控制变量对照实证 `experiments/`
+- [x] 英文版完整方法论 `SKILL.en.md`
+- [ ] 更多 agent 适配实战记录（Claude Code / Cursor）
 - [ ] `experiments/` 持续累积跨任务、跨模型的对照数据
-- [x] 英文版完整 SKILL 文档（`SKILL.en.md`）
 - [ ] 贡献指南（欢迎提交你的实证结果）
 
-欢迎 **Star** 追踪进展，也欢迎在 `experiments/` 提交你的对照实验。
+欢迎在 `experiments/` 提交你的对照实验 —— **任何"提升 X 倍"的结论，必须能在 `experiments/` 里找到对应的判别测试输出与逐字符证据锚点。**
 
-## License
+---
+
+## 🔁 相关项目
+
+同一套范式（**外部判据刹车 · 杜绝假绿空转 · 四道刹车**）在不同载体的落地，互相导流：
+
+| 项目 | 载体 | 一句话 |
+|---|---|---|
+| [`maxloop-overlord`](https://github.com/huanweide/maxloop-overlord) | Agent Skill（本仓库） | 范式本体：带刹车的产品迭代 / 方案升级双模式 |
+| [`codehealth-loop`](https://github.com/huanweide/codehealth-loop) | Python 引擎 | 范式的工程健康具象化：12 轴体检 + 四道刹车 + 沙箱验证修复 |
+| [`veriloop`](https://github.com/huanweide/veriloop) | Python CLI | 范式的代码审计具象化：12 个可插拔分析轴 + 4 道验证刹车 |
+| [`overlord-loop`](https://github.com/huanweide/overlord-loop) | 引擎实现 | 魔王系统：让 AI 自我迭代、多层自检、带刹车的代码进化引擎 |
+| [`doctors`](https://github.com/huanweide/doctors) | Node CLI 全家桶 | 提供 8 个零依赖体检轴，被 `codehealth-loop` 的感知层移植复用 |
+| [`family-showcase`](https://github.com/huanweide/family-showcase) | 单页 HTML | 工程健康家族 18 轴全景仪表盘 |
+
+---
+
+## 🔁 贡献
+
+- 提交 Issue 讲清「你遇到的假绿场景」，附上模型/提示词/轮数，比抽象建议有用得多。
+- 提交 PR 请附判别测试：你的改动必须同时有「改动前必红」与「改动后必绿」两份真实输出。
+- 在 `experiments/` 追加你自己的对照实验目录，注明模型与提示词原文。
+
+## 🔁 安全边界
+
+> ⚠️ MaxLoop 是一套**方法论 skill**，不是执行器：
+> - 它不自动改你的代码、不自动发网络请求、不读取任何密钥。
+> - 它要求"落地由人 / 上层 agent 执行"，判据与执行解耦。
+> - 它管"迭代是否真收敛"，不替你写业务需求；单次小修、纯问答不需要开 MaxLoop。
+
+## 🔁 License
 
 [MIT](LICENSE) © 2026 huanweide
+
+---
+
+<div align="center">
+  <b>如果 MaxLoop 让你少烧了几轮无效迭代，点个 ⭐ Star 让更多人看到。</b><br/>
+  <a href="https://github.com/huanweide/maxloop-overlord">huanweide/maxloop-overlord</a>
+</div>

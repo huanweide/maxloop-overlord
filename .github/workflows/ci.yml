@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # MaxLoop 的判别测试要求「旧红新绿」：baseline 必须红，产物必须绿。
+      # 只绿不红不算证明 —— 所以这两条断言必须同时成立。
+      - name: 判别测试 · baseline 必红（seed 缺陷种子）
+        run: |
+          set -e
+          cd experiments
+          echo "--- seed-dashboard.html 期望 FAIL(exit 1) ---"
+          node acceptance-test.js seed-dashboard.html && {
+            echo "FAIL: seed 竟然通过了 —— baseline 不再红，判别测试失去意义"
+            exit 1
+          } || {
+            code=$?
+            if [ "$code" -ne 1 ]; then
+              echo "FAIL: seed 退出码应为 1(=FAIL)，实际 $code"
+              exit 1
+            fi
+            echo "OK: seed 判红，baseline 成立"
+          }
+
+      - name: 判别测试 · candidate 必绿（四份产物）
+        run: |
+          set -e
+          cd experiments
+          for f in dashboard-maxloop.html dashboard-maxloop2.html dashboard-plain.html dashboard-plain2.html; do
+            echo "--- $f 期望 PASS(exit 0) ---"
+            node acceptance-test.js "$f"
+          done
+          echo "OK: 四份产物全部判别测试通过"
+
+      - name: 仓库卫生（skill 仓不得混入构建产物 / 密钥文件）
+        run: |
+          set -e
+          if git ls-files | grep -Ei '(^|/)(node_modules/|\.env$|.*\.pem$|.*\.key$)'; then
+            echo "FAIL: 检出到不应提交的文件"
+            exit 1
+          fi
+          test -f SKILL.md
+          test -f SKILL.en.md
+          test -f README.md
+          test -f assets/banner.svg
+          echo "OK: 关键文件齐全"
