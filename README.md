@@ -1,3 +1,5 @@
+**English** · [README_EN.md](./README_EN.md)
+
 <p align="center">
   <img src="assets/banner.svg" alt="MaxLoop · 带刹车的 AI 自我迭代引擎" width="1280">
 </p>
