@@ -242,7 +242,7 @@ console.log('PASS');
 | [`maxloop-overlord`](https://github.com/huanweide/maxloop-overlord) | Agent Skill（本仓库） | 范式本体：带刹车的产品迭代 / 方案升级双模式 |
 | [`codehealth-loop`](https://github.com/huanweide/codehealth-loop) | Python 引擎 | 范式的工程健康具象化：12 轴体检 + 四道刹车 + 沙箱验证修复 |
 | [`veriloop`](https://github.com/huanweide/veriloop) | Python CLI | 范式的代码审计具象化：12 个可插拔分析轴 + 4 道验证刹车 |
-| [`overlord-loop`](https://github.com/huanweide/overlord-loop) | 引擎实现 | 魔王系统：让 AI 自我迭代、多层自检、带刹车的代码进化引擎 |
+| [`overlord-loop`](https://github.com/huanweide/overlord-loop) | 引擎实现 | 带刹车的 AI 代码进化闭环引擎 |
 | [`doctors`](https://github.com/huanweide/doctors) | Node CLI 全家桶 | 提供 8 个零依赖体检轴，被 `codehealth-loop` 的感知层移植复用 |
 | [`family-showcase`](https://github.com/huanweide/family-showcase) | 单页 HTML | 工程健康家族 18 轴全景仪表盘 |
 
